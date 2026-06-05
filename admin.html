@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>GC — Admin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Manrope:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:      oklch(7% 0.022 268);
+  --bg-2:    oklch(11% 0.022 268);
+  --bg-3:    oklch(15% 0.022 268);
+  --line:    oklch(25% 0.018 268);
+  --line-2:  oklch(20% 0.018 268);
+  --text:    oklch(94% 0.008 268);
+  --muted:   oklch(62% 0.012 268);
+  --faint:   oklch(38% 0.010 268);
+  --accent:  #A78BFA;
+  --accent-soft: oklch(55% 0.18 290 / 0.12);
+  --accent-line: oklch(55% 0.18 290 / 0.35);
+  --font-body: 'Manrope', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --radius: 12px;
+}
+
+html, body {
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Login ──────────────────────────────────────────────── */
+#login-view {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+#login-form {
+  width: 100%;
+  max-width: 380px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 40px 36px;
+  box-shadow: 0 40px 120px -20px oklch(0% 0 0 / 0.55);
+}
+
+#login-form .brand {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 24px;
+}
+
+#login-form h1 {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+  color: var(--text);
+  margin-bottom: 28px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin-bottom: 16px;
+}
+.field label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.field input {
+  background: var(--bg);
+  border: 1px solid var(--line-2);
+  border-radius: 9px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  padding: 11px 13px;
+  outline: none;
+  width: 100%;
+  transition: border-color .2s, box-shadow .2s;
+}
+.field input:focus {
+  border-color: var(--accent-line);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+.field input::placeholder { color: var(--faint); }
+
+.btn-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  width: 100%;
+  background: var(--accent);
+  color: oklch(10% 0.02 268);
+  font-family: var(--font-body);
+  font-size: 14.5px;
+  font-weight: 700;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 9px;
+  cursor: pointer;
+  transition: opacity .2s, transform .15s;
+  margin-top: 8px;
+}
+.btn-primary:hover { opacity: 0.88; }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.45; cursor: not-allowed; }
+
+#login-error {
+  margin-top: 14px;
+  color: oklch(70% 0.2 25);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-align: center;
+}
+
+/* ── Admin shell ────────────────────────────────────────── */
+#admin-view {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.admin-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 28px;
+  background: oklch(7% 0.022 268 / 0.9);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-header .brand {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.admin-header h1 {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  flex: 1;
+}
+
+.admin-header .count-badge {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  color: var(--accent);
+  padding: 3px 9px;
+  border-radius: 100px;
+  letter-spacing: 0.04em;
+}
+
+.btn-ghost {
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 7px 14px;
+  cursor: pointer;
+  transition: background .2s, color .2s, border-color .2s;
+}
+.btn-ghost:hover {
+  background: var(--bg-2);
+  border-color: var(--line-2);
+  color: var(--text);
+}
+
+.admin-body {
+  flex: 1;
+  padding: 32px 28px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Submissions table ──────────────────────────────────── */
+.submissions-wrap {
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+}
+
+thead tr {
+  background: var(--bg-2);
+}
+
+th {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+
+td {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--line-2);
+  vertical-align: top;
+  color: var(--text);
+}
+
+tr:last-child td { border-bottom: none; }
+
+tbody tr {
+  transition: background .15s;
+}
+tbody tr:hover { background: var(--bg-2); }
+
+.td-date {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+.td-name { font-weight: 600; }
+
+.td-email a {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 13px;
+}
+.td-email a:hover { text-decoration: underline; }
+
+.td-company { color: var(--muted); font-size: 13px; }
+
+.badge {
+  display: inline-block;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.badge-accent {
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
+  color: var(--accent);
+}
+
+.td-message {
+  max-width: 320px;
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+
+.expand-btn {
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  cursor: pointer;
+  padding: 0;
+  letter-spacing: 0.04em;
+  margin-top: 4px;
+  display: block;
+}
+.expand-btn:hover { text-decoration: underline; }
+
+/* ── Empty / loading states ─────────────────────────────── */
+.state-msg {
+  text-align: center;
+  padding: 64px 24px;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.06em;
+}
+
+.spinner {
+  width: 24px; height: 24px;
+  border: 2px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin .7s linear infinite;
+  margin: 0 auto 16px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── Detail drawer ──────────────────────────────────────── */
+#detail-overlay {
+  position: fixed; inset: 0; z-index: 200;
+  background: oklch(3% 0.015 270 / 0.82);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 16px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s var(--ease);
+}
+#detail-overlay.open { opacity: 1; pointer-events: all; }
+
+#detail-drawer {
+  width: 100%;
+  max-width: 580px;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  padding: 32px;
+  max-height: 80svh;
+  overflow-y: auto;
+  transform: translateY(24px) scale(0.98);
+  transition: transform .3s var(--ease);
+}
+#detail-overlay.open #detail-drawer { transform: none; }
+
+.drawer-close {
+  float: right;
+  background: var(--bg-3);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  color: var(--muted);
+  width: 30px; height: 30px;
+  font-size: 13px;
+  cursor: pointer;
+  display: grid; place-items: center;
+  transition: background .2s, color .2s;
+}
+.drawer-close:hover { background: var(--bg); color: var(--text); }
+
+.drawer-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-bottom: 20px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line-2);
+}
+.drawer-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+.drawer-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+.drawer-value {
+  color: var(--text);
+  font-size: 14.5px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+.drawer-value a { color: var(--accent); text-decoration: none; }
+.drawer-value a:hover { text-decoration: underline; }
+
+@media (max-width: 600px) {
+  .admin-body { padding: 20px 16px; }
+  .admin-header { padding: 12px 16px; }
+  th, td { padding: 10px 12px; }
+  .td-message { max-width: 200px; }
+  #detail-drawer { padding: 24px 20px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── Login ──────────────────────────────────────────── -->
+<div id="login-view">
+  <form id="login-form" autocomplete="on">
+    <p class="brand">Gideon's Chosen</p>
+    <h1>Admin portal</h1>
+    <div class="field">
+      <label for="a-email">Email</label>
+      <input type="email" id="a-email" name="email" required placeholder="admin@example.com" autocomplete="username" />
+    </div>
+    <div class="field">
+      <label for="a-password">Password</label>
+      <input type="password" id="a-password" name="password" required placeholder="••••••••••" autocomplete="current-password" />
+    </div>
+    <button type="submit" class="btn-primary" id="login-btn">Sign in</button>
+    <p id="login-error" hidden></p>
+  </form>
+</div>
+
+<!-- ── Admin shell ────────────────────────────────────── -->
+<div id="admin-view" hidden>
+  <header class="admin-header">
+    <div>
+      <p class="brand">Gideon's Chosen</p>
+      <h1>Contact submissions</h1>
+    </div>
+    <span class="count-badge" id="count-badge">— entries</span>
+    <button class="btn-ghost" id="refresh-btn">↻ Refresh</button>
+    <button class="btn-ghost" id="signout-btn">Sign out</button>
+  </header>
+  <main class="admin-body">
+    <div id="table-wrap"></div>
+  </main>
+</div>
+
+<!-- ── Detail drawer ──────────────────────────────────── -->
+<div id="detail-overlay" role="dialog" aria-modal="true" aria-label="Submission detail">
+  <div id="detail-drawer">
+    <button class="drawer-close" id="drawer-close" aria-label="Close">✕</button>
+    <div id="detail-content"></div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+(function () {
+  var SUPABASE_URL = 'https://ooeptqhobqiuribcverd.supabase.co';
+  var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vZXB0cWhvYnFpdXJpYmN2ZXJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2MjkwNjYsImV4cCI6MjA5NjIwNTA2Nn0.AhhwNLN-wv9YmD0EDAz9Iy4k4_dHCojx0fEobBYOQhE';
+
+  var db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  var loginView  = document.getElementById('login-view');
+  var adminView  = document.getElementById('admin-view');
+  var loginForm  = document.getElementById('login-form');
+  var loginBtn   = document.getElementById('login-btn');
+  var loginError = document.getElementById('login-error');
+  var tableWrap  = document.getElementById('table-wrap');
+  var countBadge = document.getElementById('count-badge');
+
+  // ── Auth state ───────────────────────────────────────────
+  db.auth.getSession().then(function (res) {
+    if (res.data.session) showAdmin();
+  });
+
+  db.auth.onAuthStateChange(function (event, session) {
+    if (session) showAdmin();
+    else showLogin();
+  });
+
+  // ── Login ────────────────────────────────────────────────
+  loginForm.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var email    = document.getElementById('a-email').value.trim();
+    var password = document.getElementById('a-password').value;
+    loginBtn.disabled = true;
+    loginBtn.textContent = 'Signing in…';
+    loginError.hidden = true;
+
+    db.auth.signInWithPassword({ email: email, password: password })
+      .then(function (res) {
+        if (res.error) {
+          loginError.textContent = res.error.message;
+          loginError.hidden = false;
+          loginBtn.disabled = false;
+          loginBtn.textContent = 'Sign in';
+        }
+      });
+  });
+
+  document.getElementById('signout-btn').addEventListener('click', function () {
+    db.auth.signOut();
+  });
+
+  document.getElementById('refresh-btn').addEventListener('click', loadSubmissions);
+
+  // ── Views ────────────────────────────────────────────────
+  function showLogin() {
+    loginView.hidden = false;
+    adminView.hidden = true;
+    loginBtn.disabled = false;
+    loginBtn.textContent = 'Sign in';
+  }
+
+  function showAdmin() {
+    loginView.hidden = true;
+    adminView.hidden = false;
+    loadSubmissions();
+  }
+
+  // ── Load data ────────────────────────────────────────────
+  function loadSubmissions() {
+    tableWrap.innerHTML = '<div class="state-msg"><div class="spinner"></div>Loading…</div>';
+
+    db.from('contact_submissions')
+      .select('*')
+      .order('created_at', { ascending: false })
+      .then(function (res) {
+        if (res.error) {
+          tableWrap.innerHTML = '<div class="state-msg">Error: ' + esc(res.error.message) + '</div>';
+          return;
+        }
+        renderTable(res.data || []);
+      });
+  }
+
+  // ── Render ───────────────────────────────────────────────
+  function renderTable(rows) {
+    countBadge.textContent = rows.length + (rows.length === 1 ? ' entry' : ' entries');
+
+    if (!rows.length) {
+      tableWrap.innerHTML = '<div class="state-msg">No submissions yet.</div>';
+      return;
+    }
+
+    var labels = {
+      'solve-problem': 'Solve a problem',
+      'build-idea':    'Build a new idea'
+    };
+    var budgetLabels = {
+      'lt25k':   'Under $25k',
+      '25-75k':  '$25k – $75k',
+      '75-150k': '$75k – $150k',
+      '150k+':   '$150k+',
+      'discuss': "Let's discuss"
+    };
+    var timelineLabels = {
+      'asap':   'ASAP',
+      '1-3mo':  '1–3 months',
+      '3-6mo':  '3–6 months',
+      '6mo+':   '6+ months'
+    };
+
+    var html = '<div class="submissions-wrap"><table><thead><tr>'
+      + '<th>Date</th><th>Name</th><th>Email</th><th>Company</th>'
+      + '<th>Type</th><th>Budget</th><th>Timeline</th><th>Message</th>'
+      + '</tr></thead><tbody>';
+
+    rows.forEach(function (r, i) {
+      var d    = new Date(r.created_at);
+      var date = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      var time = d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+      var preview = r.message ? (r.message.length > 80 ? r.message.slice(0, 80) + '…' : r.message) : '—';
+
+      html += '<tr>'
+        + '<td class="td-date">' + esc(date) + '<br><span style="color:var(--faint)">' + esc(time) + '</span></td>'
+        + '<td class="td-name">' + esc(r.name || '—') + '</td>'
+        + '<td class="td-email"><a href="mailto:' + esc(r.email) + '">' + esc(r.email || '—') + '</a></td>'
+        + '<td class="td-company">' + esc(r.company || '—') + '</td>'
+        + '<td>' + (r.project_type ? '<span class="badge badge-accent">' + esc(labels[r.project_type] || r.project_type) + '</span>' : '<span class="badge">—</span>') + '</td>'
+        + '<td>' + (r.budget ? '<span class="badge">' + esc(budgetLabels[r.budget] || r.budget) + '</span>' : '<span class="badge">—</span>') + '</td>'
+        + '<td>' + (r.timeline ? '<span class="badge">' + esc(timelineLabels[r.timeline] || r.timeline) + '</span>' : '<span class="badge">—</span>') + '</td>'
+        + '<td class="td-message">'
+        + '<span class="msg-preview">' + esc(preview) + '</span>'
+        + '<button class="expand-btn" data-idx="' + i + '">View full →</button>'
+        + '</td>'
+        + '</tr>';
+    });
+
+    html += '</tbody></table></div>';
+    tableWrap.innerHTML = html;
+
+    tableWrap.querySelectorAll('.expand-btn').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        openDrawer(rows[parseInt(btn.dataset.idx)]);
+      });
+    });
+  }
+
+  // ── Detail drawer ────────────────────────────────────────
+  var overlay = document.getElementById('detail-overlay');
+  var content = document.getElementById('detail-content');
+
+  function openDrawer(r) {
+    var d    = new Date(r.created_at);
+    var date = d.toLocaleString('en-US', { dateStyle: 'medium', timeStyle: 'short' });
+
+    var labels = { 'solve-problem': 'Solve a problem', 'build-idea': 'Build a new idea' };
+    var budgetLabels = { 'lt25k': 'Under $25k', '25-75k': '$25k – $75k', '75-150k': '$75k – $150k', '150k+': '$150k+', 'discuss': "Let's discuss" };
+    var timelineLabels = { 'asap': 'ASAP', '1-3mo': '1–3 months', '3-6mo': '3–6 months', '6mo+': '6+ months' };
+
+    function row(label, value) {
+      if (!value) return '';
+      return '<div class="drawer-row"><span class="drawer-label">' + label + '</span><span class="drawer-value">' + value + '</span></div>';
+    }
+
+    content.innerHTML = ''
+      + row('Submitted', esc(date))
+      + row('Name',      esc(r.name))
+      + row('Email',     '<a href="mailto:' + esc(r.email) + '">' + esc(r.email) + '</a>')
+      + row('Company',   esc(r.company))
+      + row('Project type', r.project_type ? esc(labels[r.project_type] || r.project_type) : null)
+      + row('Budget',    r.budget   ? esc(budgetLabels[r.budget] || r.budget)     : null)
+      + row('Timeline',  r.timeline ? esc(timelineLabels[r.timeline] || r.timeline) : null)
+      + row('Message',   esc(r.message));
+
+    overlay.classList.add('open');
+    document.getElementById('drawer-close').focus();
+  }
+
+  function closeDrawer() { overlay.classList.remove('open'); }
+
+  document.getElementById('drawer-close').addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', function (e) { if (e.target === overlay) closeDrawer(); });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeDrawer(); });
+
+  // ── Helpers ──────────────────────────────────────────────
+  function esc(str) {
+    if (str == null) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+})();
+</script>
+</body>
+</html>
