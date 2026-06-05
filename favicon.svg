@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="8" fill="#0b0c18"/>
+  <!-- G -->
+  <path d="M6 11.5C6 8.46 8.46 6 11.5 6h2v2.2h-2C9.57 8.2 8.2 9.57 8.2 11.5v3.8h4.8V17H6v-5.5z" fill="#A78BFA"/>
+  <rect x="11" y="13.5" width="3.2" height="2" rx="0.4" fill="#A78BFA"/>
+  <!-- C -->
+  <path d="M16.5 11.5C16.5 8.46 18.96 6 22 6h2v2.2h-2c-1.93 0-3.3 1.37-3.3 3.3v3c0 1.93 1.37 3.3 3.3 3.3h2V20h-2c-3.04 0-5.5-2.46-5.5-5.5v-3z" fill="#A78BFA"/>
+  <!-- Accent dot -->
+  <circle cx="24" cy="24" r="3.5" fill="#A78BFA" opacity="0.9"/>
+  <circle cx="24" cy="24" r="1.5" fill="#0b0c18"/>
+</svg>
