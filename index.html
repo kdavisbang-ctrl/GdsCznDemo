@@ -97,7 +97,7 @@
       <button class="nav-return js-return-space" type="button" aria-label="Return to the space intro">
         <span class="ic" aria-hidden="true">&#9650;</span><span class="lbl">Return to space</span>
       </button>
-      <a class="btn btn-primary" href="#contact">Start a project</a>
+      <a class="btn btn-primary" href="#contact" data-contact>Start a project</a>
     </div>
   </div>
 </header>
@@ -114,7 +114,7 @@
       <h1 class="h-display stage" style="--sd:.18s">Software that <span class="accent">holds&nbsp;up</span> when it matters most.</h1>
       <p class="hero-sub stage" style="--sd:.34s">We design, build, and scale custom web and mobile products for teams that can&rsquo;t afford to get it wrong &mdash; engineered for performance, security, and the day your traffic 10&times;&rsquo;s.</p>
       <div class="hero-actions stage" style="--sd:.48s">
-        <a class="btn btn-primary" href="#contact">Start a project <span class="arrow">&#8594;</span></a>
+        <a class="btn btn-primary" href="#contact" data-contact>Start a project <span class="arrow">&#8594;</span></a>
         <a class="btn btn-ghost" href="#work">See our work</a>
       </div>
       <div class="hero-meta stage" style="--sd:.62s">
@@ -390,7 +390,7 @@
       <h2 class="reveal" id="contact-heading">Have a system that has to work? Let&rsquo;s build it right.</h2>
       <p class="reveal" style="--d:.08s">Tell us what you&rsquo;re trying to ship. We&rsquo;ll come back with a technical point of view and an honest plan &mdash; usually within two business days.</p>
       <div class="hero-actions reveal" style="--d:.16s">
-        <a class="btn btn-primary" href="mailto:hello@gideonschosen.dev">Book a call <span class="arrow">&#8594;</span></a>
+        <a class="btn btn-primary" href="#contact" data-contact>Book a call <span class="arrow">&#8594;</span></a>
         <a class="btn btn-ghost" href="mailto:hello@gideonschosen.dev">hello@gideonschosen.dev</a>
       </div>
     </div>
@@ -449,6 +449,90 @@
   </div>
 </footer>
 
+<!-- ============ CONTACT MODAL ============ -->
+<!-- SETUP: sign up at formspree.io, create a form, and replace YOUR_FORM_ID below -->
+<div id="contact-modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" aria-hidden="true">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <button class="modal-close js-modal-close" type="button" aria-label="Close">&#10005;</button>
+
+    <div class="modal-head">
+      <span class="kicker">Get in touch</span>
+      <h2 id="modal-title">Start a project</h2>
+      <p>Tell us what you&rsquo;re building. We&rsquo;ll come back with a technical point of view and an honest plan within two business days.</p>
+    </div>
+
+    <form id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
+      <div class="form-row two-col">
+        <div class="field">
+          <label for="cf-name">Full name <span class="req" aria-hidden="true">*</span></label>
+          <input type="text" id="cf-name" name="name" required placeholder="Jane Smith" autocomplete="name" />
+        </div>
+        <div class="field">
+          <label for="cf-email">Work email <span class="req" aria-hidden="true">*</span></label>
+          <input type="email" id="cf-email" name="email" required placeholder="jane@company.com" autocomplete="email" />
+        </div>
+      </div>
+      <div class="form-row two-col">
+        <div class="field">
+          <label for="cf-company">Company</label>
+          <input type="text" id="cf-company" name="company" placeholder="Acme Corp" autocomplete="organization" />
+        </div>
+        <div class="field">
+          <label for="cf-type">Project type</label>
+          <select id="cf-type" name="project_type">
+            <option value="">Select one</option>
+            <option value="web-app">Web application</option>
+            <option value="mobile-app">Mobile app</option>
+            <option value="ai-ml">AI / ML integration</option>
+            <option value="design">Product &amp; UX/UI design</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row two-col">
+        <div class="field">
+          <label for="cf-budget">Budget range</label>
+          <select id="cf-budget" name="budget">
+            <option value="">Select a range</option>
+            <option value="lt25k">Under $25k</option>
+            <option value="25-75k">$25k &ndash; $75k</option>
+            <option value="75-150k">$75k &ndash; $150k</option>
+            <option value="150k+">$150k+</option>
+            <option value="discuss">Let&rsquo;s discuss</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="cf-timeline">Timeline</label>
+          <select id="cf-timeline" name="timeline">
+            <option value="">Select a timeline</option>
+            <option value="asap">As soon as possible</option>
+            <option value="1-3mo">1&ndash;3 months</option>
+            <option value="3-6mo">3&ndash;6 months</option>
+            <option value="6mo+">6+ months</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="cf-message">Tell us about your project <span class="req" aria-hidden="true">*</span></label>
+        <textarea id="cf-message" name="message" required rows="5" placeholder="What are you building, what&rsquo;s the biggest challenge, and what does success look like?"></textarea>
+      </div>
+      <div class="form-footer">
+        <button type="submit" class="btn btn-primary submit-btn">Send it <span class="arrow">&#8594;</span></button>
+        <span class="form-note">We reply within 2 business days.</span>
+      </div>
+      <p class="form-submit-error" hidden aria-live="polite"></p>
+    </form>
+
+    <div class="form-success" tabindex="-1" hidden>
+      <div class="success-icon" aria-hidden="true">&#10003;</div>
+      <h3>Message received.</h3>
+      <p>We&rsquo;ll review your project and get back with a technical point of view within two business days.</p>
+      <button type="button" class="btn btn-ghost js-modal-close" style="margin-top:28px">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============ TWEAKS PANEL (design controls) ============ -->
 <div id="tweaks-root"></div>
 
@@ -462,6 +546,7 @@
 <script src="js/hero.js"></script>
 <script src="js/space.js"></script>
 <script src="js/porch.js"></script>
+<script src="js/contact.js"></script>
 <script src="js/scroll.js"></script>
 
 </body>
