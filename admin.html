@@ -470,13 +470,14 @@ tbody tr:hover { background: var(--bg-2); }
   var countBadge = document.getElementById('count-badge');
 
   // ── Auth state ───────────────────────────────────────────
+  // Check if already logged in on page load
   db.auth.getSession().then(function (res) {
-    if (res.data.session) showAdmin();
+    if (res.data && res.data.session) showAdmin();
   });
 
-  db.auth.onAuthStateChange(function (event, session) {
-    if (session) showAdmin();
-    else showLogin();
+  // Only handle explicit sign-out to return to login screen
+  db.auth.onAuthStateChange(function (event) {
+    if (event === 'SIGNED_OUT') showLogin();
   });
 
   // ── Login ────────────────────────────────────────────────
@@ -495,6 +496,8 @@ tbody tr:hover { background: var(--bg-2); }
           loginError.hidden = false;
           loginBtn.disabled = false;
           loginBtn.textContent = 'Sign in';
+        } else {
+          showAdmin();
         }
       });
   });
