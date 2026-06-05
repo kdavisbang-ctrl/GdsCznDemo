@@ -437,7 +437,7 @@
       <p>Tell us what you&rsquo;re building. We&rsquo;ll come back with a technical point of view and an honest plan within two business days.</p>
     </div>
 
-    <form id="contact-form" action="https://formspree.io/f/YOUR_FORM_ID" method="POST" novalidate>
+    <form id="contact-form" novalidate>
       <div class="form-row two-col">
         <div class="field">
           <label for="cf-name">Full name <span class="req" aria-hidden="true">*</span></label>
@@ -507,6 +507,14 @@
 
 <!-- ============ TWEAKS PANEL (design controls) ============ -->
 <div id="tweaks-root"></div>
+
+<!-- Supabase JS client (contact form) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<!-- Replace with your Supabase project URL and anon key (safe to expose — RLS restricts to INSERT only) -->
+<script>
+  window.GC_SUPABASE_URL = 'YOUR_SUPABASE_URL';
+  window.GC_SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+</script>
 
 <!-- React (production builds) + Babel standalone for JSX -->
 <script src="https://unpkg.com/react@18.3.1/umd/react.production.min.js" crossorigin="anonymous"></script>

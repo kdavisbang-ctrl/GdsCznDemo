@@ -52,6 +52,57 @@ tweaks.jsx              Live design tweaks (accent, font, motion, bg darkness)
 10. **CTA band** — conversion section
 11. **Footer** — nav, contact, socials, "Return to space" control
 
+## Contact form — Supabase setup
+
+The "Book a call" / "Start a project" buttons open a modal form that submits to Supabase.
+
+### 1 — Create a Supabase project
+
+Sign up at [supabase.com](https://supabase.com), create a new project, then run this SQL in the **SQL Editor**:
+
+```sql
+create table contact_submissions (
+  id          uuid        primary key default gen_random_uuid(),
+  created_at  timestamptz default now(),
+  name        text        not null,
+  email       text        not null,
+  company     text,
+  project_type text,
+  budget      text,
+  timeline    text,
+  message     text        not null
+);
+
+-- Enable Row Level Security
+alter table contact_submissions enable row level security;
+
+-- Allow anyone to INSERT (submit the form), but nobody can SELECT via the anon key
+create policy "public insert only"
+  on contact_submissions
+  for insert
+  to anon
+  with check (true);
+```
+
+### 2 — Add your credentials to index.html
+
+In `index.html`, find this block and replace the placeholders:
+
+```html
+<script>
+  window.GC_SUPABASE_URL = 'YOUR_SUPABASE_URL';   // e.g. https://xxxx.supabase.co
+  window.GC_SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY'; // Settings → API → anon public
+</script>
+```
+
+Both values are in your Supabase project under **Settings → API**. The anon key is safe to expose in client-side code — the RLS policy above ensures it can only insert, never read.
+
+### 3 — View submissions
+
+Go to **Table Editor → contact_submissions** in your Supabase dashboard.
+
+---
+
 ## Design tokens
 
 All design values live in `:root` in `css/styles.css`. Key tokens:
