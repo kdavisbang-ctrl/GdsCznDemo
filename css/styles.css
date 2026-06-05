@@ -260,7 +260,7 @@ h1, h2, h3 {
     radial-gradient(80% 60% at 50% 50%, var(--accent-soft), transparent 60%);
   pointer-events: none;
 }
-.hero-inner { padding-block: 140px 120px; }
+.hero-inner { padding-block: clamp(100px, 18vh, 140px) clamp(80px, 12vh, 120px); }
 
 .hero-eyebrow {
   display: inline-flex; align-items: center; gap: 12px;
@@ -946,3 +946,71 @@ body.intro-done #intro { opacity: 0; transform: scale(1.16); pointer-events: non
 
 /* Lock scroll while the intro is up */
 html.lock, html.lock body { overflow: hidden; height: 100%; touch-action: none; }
+
+/* ============================================================
+   MOBILE — targeted fixes for small screens
+   ============================================================ */
+
+/* Nav: hide "Start a project" below 600px to avoid overflow */
+@media (max-width: 600px) {
+  .nav-cta .btn { display: none; }
+  .nav-inner { gap: 16px; }
+}
+
+/* Hero eyebrow: tighten letter-spacing and allow wrap on narrow screens */
+@media (max-width: 520px) {
+  .hero-eyebrow {
+    letter-spacing: 0.08em;
+    white-space: normal;
+    text-align: center;
+    justify-content: center;
+    font-size: 11px;
+  }
+  .hero h1 { margin-top: 20px; }
+  .hero-sub { margin-top: 20px; font-size: 16px; }
+  .hero-actions { margin-top: 28px; }
+  .hero-meta { margin-top: 36px; gap: 20px; }
+  .hero-meta .stat .n { font-size: 24px; }
+}
+
+/* Intro: tighten letter-spacing on the eyebrow so it doesn't overflow */
+@media (max-width: 480px) {
+  .intro-eyebrow {
+    letter-spacing: 0.12em;
+    font-size: 10px;
+    padding: 8px 14px;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .intro-word { font-size: clamp(38px, 10vw, 72px); }
+  .intro-tag { font-size: 14px; }
+  #enterBtn { font-size: 15px; padding: 14px 32px; }
+  .intro-coords { font-size: 9px; letter-spacing: 0.1em; }
+}
+
+/* Hero actions: stack to column on very small screens so buttons don't overflow */
+@media (max-width: 400px) {
+  .hero-actions { flex-direction: column; align-items: flex-start; }
+  .hero-actions .btn { width: 100%; justify-content: center; }
+  .cta .hero-actions { align-items: center; }
+}
+
+/* Section padding: reduce further on small phones */
+@media (max-width: 480px) {
+  .section-pad { padding-block: clamp(56px, 10vh, 80px); }
+  .trust { padding-block: 36px; }
+  .svc-grid { margin-top: 40px; }
+  .svc { padding: 28px 22px 32px; }
+  .proc-wrap { margin-top: 40px; }
+  .tech-grid { margin-top: 36px; gap: 10px; }
+  .cases { margin-top: 40px; }
+  .pillars { margin-top: 40px; }
+  .quotes { margin-top: 40px; }
+}
+
+/* Footer: tighter on small phones */
+@media (max-width: 480px) {
+  .footer { padding-block: 48px 28px; }
+  .footer-top { gap: 28px 20px; }
+  .footer-bot { flex-direction: column; align-items: flex-start; gap: 14px; }
+}
