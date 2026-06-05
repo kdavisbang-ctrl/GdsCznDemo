@@ -224,7 +224,10 @@ h1, h2, h3 {
   background: var(--accent-soft); box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 9%, transparent);
 }
 .nav-return:hover .ic { transform: translateY(-2px); }
+/* Between 980–1040px nav-links are still visible, so collapse to icon-only */
 @media (max-width: 1040px) { .nav-return .lbl { display: none; } .nav-return { padding: 9px 11px; } }
+/* Below 980px nav-links are gone — plenty of room to show the full label again */
+@media (max-width: 980px) { .nav-return .lbl { display: inline; } .nav-return { padding: 9px 15px; } }
 
 .footer-return {
   background: none; border: none; cursor: pointer;
@@ -397,7 +400,7 @@ html.motion-off .scroll-cue .track::after { animation: none; }
 .svc-grid {
   margin-top: 64px;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 1px;
   background: var(--hairline);
   border: 1px solid var(--hairline);
@@ -435,7 +438,6 @@ html.motion-off .scroll-cue .track::after { animation: none; }
   position: absolute; top: 34px; right: 32px;
   font-family: var(--font-mono); font-size: 12px; color: var(--faint);
 }
-@media (max-width: 900px) { .svc-grid { grid-template-columns: repeat(2, 1fr); } }
 @media (max-width: 600px) { .svc-grid { grid-template-columns: 1fr; } }
 
 /* ---------- Process timeline ---------- */
@@ -945,7 +947,8 @@ body.intro-done #intro { opacity: 0; transform: scale(1.16); pointer-events: non
 }
 
 /* Lock scroll while the intro is up */
-html.lock, html.lock body { overflow: hidden; height: 100%; touch-action: none; }
+/* touch-action intentionally omitted — preserving the iOS swipe-back gesture */
+html.lock, html.lock body { overflow: hidden; height: 100%; }
 
 /* ============================================================
    MOBILE — targeted fixes for small screens
