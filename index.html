@@ -98,9 +98,24 @@
         <span class="ic" aria-hidden="true">&#9650;</span><span class="lbl">Return to space</span>
       </button>
       <a class="btn btn-primary" href="#contact" data-contact>Start a project</a>
+      <button class="nav-burger js-nav-toggle" type="button" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mobile-nav">
+        <span class="burger-line"></span>
+        <span class="burger-line"></span>
+      </button>
     </div>
   </div>
 </header>
+
+<!-- ============ MOBILE NAV ============ -->
+<div id="mobile-nav" aria-hidden="true" aria-label="Mobile navigation">
+  <nav class="mobile-nav-links">
+    <a href="#services" style="--i:0">Services</a>
+    <a href="#work"     style="--i:1">Work</a>
+    <a href="#process"  style="--i:2">Process</a>
+    <a href="#about"    style="--i:3">Why us</a>
+    <a href="#contact" data-contact class="mnav-cta" style="--i:4">Start a project &nbsp;&#8594;</a>
+  </nav>
+</div>
 
 <main id="top">
 
@@ -527,6 +542,7 @@
 <script src="js/space.js"></script>
 <script src="js/porch.js"></script>
 <script src="js/contact.js"></script>
+<script src="js/nav.js"></script>
 <script src="js/scroll.js"></script>
 
 </body>
