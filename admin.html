@@ -418,12 +418,8 @@ tbody tr:hover { background: var(--bg-2); }
     <p class="brand">Gideon's Chosen</p>
     <h1>Admin portal</h1>
     <div class="field">
-      <label for="a-email">Email</label>
-      <input type="email" id="a-email" name="email" required placeholder="admin@example.com" autocomplete="username" />
-    </div>
-    <div class="field">
       <label for="a-password">Password</label>
-      <input type="password" id="a-password" name="password" required placeholder="••••••••••" autocomplete="current-password" />
+      <input type="password" id="a-password" name="password" required placeholder="••••••••••" autocomplete="current-password" autofocus />
     </div>
     <button type="submit" class="btn-primary" id="login-btn">Sign in</button>
     <p id="login-error" hidden></p>
@@ -459,6 +455,8 @@ tbody tr:hover { background: var(--bg-2); }
 (function () {
   var SUPABASE_URL = 'https://ooeptqhobqiuribcverd.supabase.co';
   var SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9vZXB0cWhvYnFpdXJpYmN2ZXJkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2MjkwNjYsImV4cCI6MjA5NjIwNTA2Nn0.AhhwNLN-wv9YmD0EDAz9Iy4k4_dHCojx0fEobBYOQhE';
+  var PWD_HASH = 'f74510dd0bcf218b180a608e387ffeb5fe553b66cac11ec77315a1d4d3d4fa76';
+  var SESSION_KEY = 'gc_admin_ok';
 
   var db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
@@ -471,40 +469,34 @@ tbody tr:hover { background: var(--bg-2); }
   var countBadge = document.getElementById('count-badge');
 
   // ── Auth state ───────────────────────────────────────────
-  // Check if already logged in on page load
-  db.auth.getSession().then(function (res) {
-    if (res.data && res.data.session) showAdmin();
-  });
-
-  // Only handle explicit sign-out to return to login screen
-  db.auth.onAuthStateChange(function (event) {
-    if (event === 'SIGNED_OUT') showLogin();
-  });
+  if (sessionStorage.getItem(SESSION_KEY)) showAdmin();
 
   // ── Login ────────────────────────────────────────────────
   loginForm.addEventListener('submit', function (e) {
     e.preventDefault();
-    var email    = document.getElementById('a-email').value.trim();
     var password = document.getElementById('a-password').value;
     loginBtn.disabled = true;
-    loginBtn.textContent = 'Signing in…';
+    loginBtn.textContent = 'Checking…';
     loginError.hidden = true;
 
-    db.auth.signInWithPassword({ email: email, password: password })
-      .then(function (res) {
-        if (res.error) {
-          loginError.textContent = res.error.message;
+    crypto.subtle.digest('SHA-256', new TextEncoder().encode(password))
+      .then(function (buf) {
+        var hex = Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+        if (hex === PWD_HASH) {
+          sessionStorage.setItem(SESSION_KEY, '1');
+          showAdmin();
+        } else {
+          loginError.textContent = 'Incorrect password.';
           loginError.hidden = false;
           loginBtn.disabled = false;
           loginBtn.textContent = 'Sign in';
-        } else {
-          showAdmin();
         }
       });
   });
 
   document.getElementById('signout-btn').addEventListener('click', function () {
-    db.auth.signOut();
+    sessionStorage.removeItem(SESSION_KEY);
+    showLogin();
   });
 
   document.getElementById('refresh-btn').addEventListener('click', loadSubmissions);
