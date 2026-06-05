@@ -23,6 +23,16 @@
 
   // ---- Open / close --------------------------------------------------------
   function openModal() {
+    // Reset form state in case it was previously submitted
+    form.hidden = false;
+    if (success) success.hidden = true;
+    form.reset();
+    form.querySelectorAll('.field-error').forEach(function (el) { el.classList.remove('field-error'); });
+    var submitErr = form.querySelector('.form-submit-error');
+    if (submitErr) submitErr.hidden = true;
+    var btn = form.querySelector('.submit-btn');
+    if (btn) { btn.disabled = false; btn.innerHTML = 'Send it <span class="arrow">→</span>'; }
+
     modal.removeAttribute('aria-hidden');
     modal.classList.add('open');
     document.documentElement.classList.add('modal-lock');
