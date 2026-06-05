@@ -18,7 +18,9 @@
   var SUPABASE_URL = window.GC_SUPABASE_URL || '';
   var SUPABASE_KEY = window.GC_SUPABASE_KEY || '';
   if (SUPABASE_URL && SUPABASE_KEY && window.supabase) {
-    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false }
+    });
   }
 
   // ---- Open / close --------------------------------------------------------
