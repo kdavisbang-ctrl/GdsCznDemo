@@ -44,6 +44,14 @@
     if (!trigger) return;
     e.preventDefault();
     e.stopImmediatePropagation();
+    // Close mobile nav first if it's open (stopImmediatePropagation prevents nav.js seeing this click)
+    var mobileNav = document.getElementById('mobile-nav');
+    if (mobileNav && !mobileNav.hasAttribute('aria-hidden')) {
+      mobileNav.setAttribute('aria-hidden', 'true');
+      document.documentElement.classList.remove('nav-open', 'modal-lock');
+      var burger = document.querySelector('.js-nav-toggle');
+      if (burger) { burger.setAttribute('aria-expanded', 'false'); burger.setAttribute('aria-label', 'Open navigation menu'); }
+    }
     openModal();
   }, true);
 
