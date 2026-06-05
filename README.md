@@ -1,25 +1,80 @@
-# CODING AGENTS: READ THIS FIRST
+# Gideon's Chosen — Senior Software Engineering Studio
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+A cinematic single-page marketing site for a senior-only software studio. Designed in Claude Design, implemented as production-grade plain HTML/CSS/JS.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+## Live site
 
-## What you should do — IMPORTANT
+**[https://kdavisbang-ctrl.github.io/GdsCznDemo/](https://kdavisbang-ctrl.github.io/GdsCznDemo/)**
 
-**Read the chat transcripts first.** There are 1 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+## Dev preview
 
-**Read `project/index.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+No build step required. Serve the root directory with any static file server:
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+```bash
+# Option 1 — Python (built into macOS/Linux)
+python3 -m http.server 8080
+# then open http://localhost:8080
 
-## About the design files
+# Option 2 — Node (npx, no install)
+npx serve .
+# then open http://localhost:3000
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+# Option 3 — VS Code Live Server extension
+# Right-click index.html → Open with Live Server
+```
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+## File structure
 
-## Bundle contents
+```
+index.html              Main page
+css/
+  styles.css            Design system: tokens, layout, all components
+js/
+  hero.js               Engineering mesh canvas (node field + proximity links)
+  space.js              Starfield class — 3D parallax idle + hyperspace warp
+  porch.js              Space-portal intro gate + pinned scenic hero scroll
+  scroll.js             Scroll reveals, progress bar, counters, parallax
+tweaks-panel.jsx        Reusable React UI controls scaffold
+tweaks.jsx              Live design tweaks (accent, font, motion, bg darkness)
+```
 
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `Gideon's Chosen Website` project files (HTML prototypes, assets, components)
+## Sections
+
+1. **Space portal intro** — held full-screen entry with live 3D starfield, crescent moon, shooting stars, nebula auras, rocket launch, floating terminal monitor, and a hyperspace warp on "Launch"
+2. **Hero** — pinned scenic-scroll stage with engineering mesh canvas and staged entrance
+3. **Trust bar** — client logo strip
+4. **Services** — 6-card capability grid
+5. **Process** — 4-step timeline with progressive lighting
+6. **Tech stack** — 12-tile technology grid
+7. **Case studies** — 3 problem→solution→result cards with metrics
+8. **Why us** — 3 differentiator pillars
+9. **Testimonials** — 2 client quotes
+10. **CTA band** — conversion section
+11. **Footer** — nav, contact, socials, "Return to space" control
+
+## Design tokens
+
+All design values live in `:root` in `css/styles.css`. Key tokens:
+
+| Token | Value | Notes |
+|---|---|---|
+| `--accent` | `#A78BFA` | Violet — user-swappable via Tweaks panel |
+| `--bg` | `oklch(7% 0.022 268)` | Deep navy |
+| `--font-display` | Space Grotesk | Headings |
+| `--font-body` | Manrope | Body text |
+| `--font-mono` | JetBrains Mono | Labels, code, eyebrows |
+| `--ease` | `cubic-bezier(0.16, 1, 0.3, 1)` | Spring-like easing |
+
+## Tweaks panel
+
+A React-powered design controls panel (bottom-right corner, activated from the Claude Design toolbar) lets you live-edit: accent color, headline font, cinematic motion on/off, and background darkness. Settings persist to `localStorage`.
+
+## Assumptions & design notes
+
+- **Placeholder content:** Client logos, case study visuals, testimonial avatars, and metrics are realistic placeholders — intended to be swapped for real assets.
+- **Email:** Contact links point to `hello@gideonschosen.dev` — update to your real address.
+- **Social links:** X and LinkedIn point to `#` — update to real profile URLs.
+- **GitHub Pages:** Set the Pages source to the `main` branch root (`/`). No build step; the site is pure static HTML/CSS/JS.
+- **React/Babel:** Loaded from unpkg CDN (production builds) for the Tweaks panel only. The rest of the site has zero JS dependencies.
+- **`prefers-reduced-motion`:** All animations (canvas, CSS keyframes, scroll reveals) respect the OS reduced-motion preference and are also toggleable via the Tweaks panel.
+- **Intro skip:** The space portal can be skipped via "Skip intro", the Escape key, or any scroll/click before launching. It also self-dismisses in frozen/background-tab contexts.
